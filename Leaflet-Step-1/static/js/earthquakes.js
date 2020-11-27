@@ -104,10 +104,6 @@ var myMap = L.map("map", {
     };
 
     legend.addTo(myMap)
-
-   
-
-    // legend.addTo(map);
   
   });
   
