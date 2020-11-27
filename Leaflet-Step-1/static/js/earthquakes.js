@@ -1,6 +1,6 @@
 var myMap = L.map("map", {
-    center: [37.7749, -122.4194],
-    zoom: 13
+    center: [39.8283, -98.5795],
+    zoom: 4
   });
   
   // Adding tile layer
@@ -17,18 +17,19 @@ var myMap = L.map("map", {
   // Add a marker to the map for each crime
   d3.json(link).then(function(response) {
   
-    console.log(response);
-    console.log(response.features);
-
     var features = response.features
 
     console.log(features)
   
     features.forEach(function(data){
-      var geometry = data.geometry;
+        var geometry = data.geometry;
     
-      console.log(geometry)
-      
+        console.log(geometry)
+      // if the location field is populated
+        if (location) {
+            L.marker([geometry.coordinates[1], geometry.coordinates[0]]).addTo(myMap);
+        }
+
     });
   
   });
