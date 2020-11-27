@@ -23,11 +23,20 @@ var myMap = L.map("map", {
   
     features.forEach(function(data){
         var geometry = data.geometry;
+        var properties = data.properties;
+
+        console.log("properties", properties.mag)
+
     
         console.log(geometry)
       // if the location field is populated
         if (location) {
-            L.marker([geometry.coordinates[1], geometry.coordinates[0]]).addTo(myMap);
+            var myMarker = L.marker([geometry.coordinates[1], geometry.coordinates[0]],
+                
+                ).addTo(myMap);
+           
+           
+
         }
 
     });
