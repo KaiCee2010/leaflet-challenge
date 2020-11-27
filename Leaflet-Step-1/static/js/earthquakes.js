@@ -64,9 +64,10 @@ var myMap = L.map("map", {
                 radius: magnitude*10000,
                 color: 'black',
                 fillColor: color,
-                fillOpacity: 1,
+                fillOpacity: .75,
                 weight: 1
-            }).addTo(myMap);
+            }).bindPopup(`<h1>${properties.title}</h1> <hr> <h3>Status: ${properties.status}</h3>`)
+            .addTo(myMap);
            
            
 
