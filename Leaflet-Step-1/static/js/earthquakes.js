@@ -26,14 +26,15 @@ var myMap = L.map("map", {
         var properties = data.properties;
 
         console.log("properties", properties.mag)
-
+        var magnitude = properties.mag
     
         console.log(geometry)
       // if the location field is populated
         if (location) {
-            var myMarker = L.marker([geometry.coordinates[1], geometry.coordinates[0]],
-                
-                ).addTo(myMap);
+            var myCircle = L.circle([geometry.coordinates[1], geometry.coordinates[0]],{
+                radius: magnitude*10000
+
+            }).addTo(myMap);
            
            
 
