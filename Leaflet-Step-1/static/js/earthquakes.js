@@ -26,14 +26,46 @@ var myMap = L.map("map", {
         var properties = data.properties;
 
         console.log("properties", properties.mag)
-        var magnitude = properties.mag
-    
-        console.log(geometry)
-      // if the location field is populated
-        if (location) {
-            var myCircle = L.circle([geometry.coordinates[1], geometry.coordinates[0]],{
-                radius: magnitude*10000
+        console.log("geometry", geometry)
 
+        var magnitude = properties.mag 
+
+        var depth = geometry.coordinates[2]
+    
+      // if the location field is populated
+        if (geometry) {
+            console.log("depth before switch", depth)
+            
+
+            if (depth > 90){
+                var color = "#f03535"
+            }
+            else if (depth > 70){
+                var color = "#f27227"
+            }
+            else if (depth > 50){
+                var color = "#f6ac17"
+            }
+            else if (depth > 30){
+                var color = "#f0de33"
+            }
+            else if (depth > 10){
+                var color = "#a1f64c"
+            }
+            else {
+                var color = "#3dc809"
+            }
+
+            console.log("depth", depth)
+            console.log("color", color)
+
+
+            var myCircle = L.circle([geometry.coordinates[1], geometry.coordinates[0]],{
+                radius: magnitude*10000,
+                color: 'black',
+                fillColor: color,
+                fillOpacity: 1,
+                weight: 1
             }).addTo(myMap);
            
            
