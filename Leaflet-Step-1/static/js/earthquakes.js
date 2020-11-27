@@ -11,7 +11,7 @@ function getColor(depth){
 
 
 var myMap = L.map("map", {
-    center: [39.8283, -98.5795],
+    center: [44.53155795563836, -102.61109623371827],
     zoom: 4
   });
   
