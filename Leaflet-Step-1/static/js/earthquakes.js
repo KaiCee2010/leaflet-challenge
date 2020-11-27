@@ -73,10 +73,10 @@ var myMap = L.map("map", {
 
 
             var myCircle = L.circle([geometry.coordinates[1], geometry.coordinates[0]],{
-                radius: magnitude*10000,
+                radius: magnitude*7500,
                 color: 'black',
                 fillColor: getColor(geometry.coordinates[2]),
-                fillOpacity: .75,
+                fillOpacity: .85,
                 weight: 1
             }).bindPopup(`<h3>${properties.title}</h3> <hr> 
             <h5>Status: ${properties.status}<br>
