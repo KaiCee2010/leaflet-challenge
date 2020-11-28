@@ -1,3 +1,6 @@
+var link = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+
+
 function getColor(depth){
   return depth > 90 ? '#f03535' :
          depth > 70 ? '#f27227' :
@@ -40,15 +43,15 @@ function createMap(earthquakes){
 
   // Create an overlayMaps object to hold the bikeStations layer
   var overlayMaps = {
-    "Earthquakes": earthquakesMarkers
+    "Earthquakes": earthquakes
   };
 
 
   // Create the map object with options
-  var myMap = L.map("map-id", {
+  var myMap = L.map("map", {
     center: [44.53155795563836, -102.61109623371827],
     zoom: 4,
-    layers: [satelliteMap, earthquakesMarkers]
+    layers: [satelliteMap, earthquakes]
   });
 
   // Create a layer control, pass in the baseMaps and overlayMaps. Add the layer control to the map
@@ -57,3 +60,40 @@ function createMap(earthquakes){
   }).addTo(myMap);
   
 }
+
+function createMarkers(response){
+
+  var features = response.features
+  
+
+  var earthquakeMarkers = [];
+
+  for (var index = 0; index < features.length; index++) {
+    var feature = features[index];
+
+    var geometry = feature.geometry;
+    var properties = feature.properties;
+
+    var magnitude = properties.mag 
+
+    var depth = geometry.coordinates[2]
+
+    var earthquakeMarker = L.circle([geometry.coordinates[1], geometry.coordinates[0]],{
+      radius: magnitude*7500,
+      color: 'black',
+      fillColor: getColor(geometry.coordinates[2]),
+      fillOpacity: .85,
+      weight: 1
+    }).bindPopup(`<h3>${properties.title}</h3> <hr> 
+    <h5>Status: ${properties.status}<br>
+    Earthquake Info: <a href = ${properties.url}>Detailed Earthquake Info</a><br>
+    </h5> `)
+
+    earthquakeMarkers.push(earthquakeMarker)
+  }
+
+  createMap(L.layerGroup(earthquakeMarkers));
+
+}
+
+d3.json(link).then(response => createMarkers(response));
