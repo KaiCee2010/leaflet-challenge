@@ -1,4 +1,4 @@
-var link = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+var earthquakeLink = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
 
 function getColor(depth){
@@ -128,4 +128,4 @@ function createEarthquakeMarkers(response){
 
 }
 
-d3.json(link).then(response => createEarthquakeMarkers(response));
+d3.json(earthquakeLink).then(response => createEarthquakeMarkers(response));
