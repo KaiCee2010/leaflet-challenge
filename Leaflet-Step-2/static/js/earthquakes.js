@@ -58,10 +58,40 @@ function createMap(earthquakes){
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
+
+  var earthquakeslegend = L.control({position: 'bottomright'});
+  earthquakeslegend.onAdd = function (myMap) {
+
+  var div = L.DomUtil.create('div', 'info legend'),
+  depthArray = [-10, 10, 30, 50, 70, 90],
+  labels = [];
+
+  // loop through our density intervals and generate a label with a colored square for each interval
+  for (var i = 0; i < depthArray.length; i++) {
+      div.innerHTML +=
+          '<i style="background:' + getColor(depthArray[i] + 1) + '  "></i> ' + '&nbsp&nbsp&nbsp' +
+          depthArray[i] + (depthArray[i + 1] ? '&ndash;' + depthArray[i + 1] + '<br>' : '+');
+  }
+
+  return div;
+  };
+
+  earthquakeslegend.addTo(myMap)
+
+
+  // myMap.on('overlayadd', function (eventLayer) {
+  //   // Switch to the Population legend...
+  //   if (eventLayer.name === 'Earthquakes') {
+  //       this.removeControl(populationChangeLegend);
+  //       populationLegend.addTo(this);
+  //   } else { // Or switch to the Population Change legend...
+  //       this.removeControl(populationLegend);
+  //       populationChangeLegend.addTo(this);
+  //   }
   
 }
 
-function createMarkers(response){
+function createEarthquakeMarkers(response){
 
   var features = response.features
   
@@ -90,10 +120,12 @@ function createMarkers(response){
     </h5> `)
 
     earthquakeMarkers.push(earthquakeMarker)
+
+
   }
 
   createMap(L.layerGroup(earthquakeMarkers));
 
 }
 
-d3.json(link).then(response => createMarkers(response));
+d3.json(link).then(response => createEarthquakeMarkers(response));
