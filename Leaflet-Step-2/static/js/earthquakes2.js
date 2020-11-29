@@ -15,36 +15,38 @@ Promise.all([d3.json(queryUrl), d3.json(queryUrl2)]).then(function(data){
     console.log("Plates", data[1])
 
 
-    // var magnitude = data[0].features.properties.mag
-    // var depth = geometry.coordinates[2]
-
-  //   var geojsonMarkerOptions = {
-  //     radius: magnitude*7500,
-  //     fillColor: getColor(depth),
-  //     color: "#000",
-  //     weight: 1,
-  //     opacity: .85,
-  //     fillOpacity: 0.8
-  // }
-
     var earthquakes = L.geoJSON(data[0].features, 
       {pointToLayer: function (feature, latlng) {
-      return L.circleMarker(latlng, style(feature));
+      return L.circleMarker(latlng, earthquakeStyle(feature));
       },
       onEachFeature : addPopup
     });
 
-    // var earthquakes = L.geoJSON(data[0].features, { 
-    //   style: style,
-    //   onEachFeature : addPopup
-    // });
+    
   
     var plates = L.geoJSON(data[1].features, {
+      style: plateStyle,
       onEachFeature : addPopupPlate
     });
 
-
-    createMap(earthquakes, plates)
+    var earthquakesLegend = L.control({position: 'bottomright'});
+    earthquakesLegend.onAdd = function (myMap) {
+  
+        var div = L.DomUtil.create('div', 'info earthquakes legend'),
+        depthArray = [-10, 10, 30, 50, 70, 90],
+        labels = [];
+  
+        // loop through our density intervals and generate a label with a colored square for each interval
+        for (var i = 0; i < depthArray.length; i++) {
+            div.innerHTML +=
+                '<i style="background:' + getColor(depthArray[i] + 1) + '  "></i> ' + '&nbsp&nbsp&nbsp' +
+                depthArray[i] + (depthArray[i + 1] ? '&ndash;' + depthArray[i + 1] + '<br>' : '+');
+        }
+  
+        return div;
+    };
+  
+    createMap(earthquakes, plates, earthquakesLegend)
   
 });
 
@@ -53,7 +55,11 @@ Promise.all([d3.json(queryUrl), d3.json(queryUrl2)]).then(function(data){
 // Define a function we want to run once for each feature in the features array
 function addPopup(feature, layer) {
   // Give each feature a popup describing the place and time of the earthquake
-  return layer.bindPopup(`<h3> ${feature.properties.place} </h3> <hr> <p> ${Date(feature.properties.time)} </p>`);
+  return layer.bindPopup(`<h3>${feature.properties.title}</h3> <hr> 
+  <h5>Status: ${feature.properties.status}<br>
+  ${Date(feature.properties.time)}<br>
+  Earthquake Info: <a href = ${feature.properties.url} target="_blank">Detailed Earthquake Info</a><br>
+  </h5>`);
 }
 
 function addPopupPlate(feature, layer) {
@@ -73,7 +79,7 @@ function getColor(depth){
          
 }
 
-function style(feature) {
+function earthquakeStyle(feature) {
   return {
       radius: feature.properties.mag*4,
       fillColor: getColor(feature.geometry.coordinates[2]),
@@ -84,38 +90,57 @@ function style(feature) {
   };
 }
 
-function createMap(earthquakes, plates) {
+function plateStyle(feature) {
+  return {
+      weight: 2,
+      opacity: 1,
+      color: 'orange',
+      fillOpacity: 0
+  };
+}
+
+
+function createMap(earthquakes, plates, earthquakesLegend) {
 
   // Define streetmap and darkmap layers
-  var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  var satelliteBase = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     maxZoom: 18,
-    id: "streets-v11",
+    id: "satellite-v9",
     accessToken: API_KEY
   });
 
-  var darkmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  var darkgreyBase = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     maxZoom: 18,
     id: "dark-v10",
     accessToken: API_KEY
   });
 
+  var outdoorsBase = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    maxZoom: 18,
+    id: "outdoors-v11",
+    accessToken: API_KEY
+  });
+
+
   // Define a baseMaps object to hold our base layers
   var baseMaps = {
-    "Street Map": streetmap,
-    "Dark Map": darkmap
+    "Satellite ": satelliteBase,
+    "Dark Greyscale": darkgreyBase,
+    "Outdoors": outdoorsBase,
+    
   };
 
   // Create overlay object to hold our overlay layer
   var overlayMaps = {
+    "Tectonic Plates": plates,
     "Earthquakes": earthquakes,
-    "Plates": plates
   };
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load
   var myMap = L.map("map", {
     center: [44.53155795563836, -102.61109623371827],
     zoom: 4,
-    layers: [streetmap, earthquakes]
+    layers: [satelliteBase, earthquakes]
   });
 
   // Create a layer control
@@ -124,4 +149,17 @@ function createMap(earthquakes, plates) {
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
+
+  earthquakesLegend.addTo(myMap) 
+
+  myMap.on('overlayadd', function (eventLayer) {
+    // Switch to the Earthquakes legend...
+    if (eventLayer.name === 'Earthquakes') {
+        earthquakesLegend.addTo(this);
+    } else { // Or remove
+        this.removeControl(earthquakesLegend);
+    }
+})
+ 
+
 }

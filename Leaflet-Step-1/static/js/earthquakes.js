@@ -80,8 +80,9 @@ var myMap = L.map("map", {
                 weight: 1
             }).bindPopup(`<h3>${properties.title}</h3> <hr> 
             <h5>Status: ${properties.status}<br>
+            <p> ${Date(properties.time)}<br>
             Earthquake Info: <a href = ${properties.url}>Detailed Earthquake Info</a><br>
-            </h5> `)
+            </p> `)
             .addTo(myMap);
         }
     });
