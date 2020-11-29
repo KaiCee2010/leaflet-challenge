@@ -26,6 +26,7 @@ Promise.all([d3.json(queryUrl), d3.json(queryUrl2)]).then(function(data){
       onEachFeature : addPopupPlate
     });
 
+    //create legend for earthquake layer
     var earthquakesLegend = L.control({position: 'bottomright'});
     earthquakesLegend.onAdd = function (myMap) {
   
@@ -59,13 +60,16 @@ function addPopup(feature, layer) {
   </h5>`);
 }
 
+//function for popups for tectonic plates
 function addPopupPlate(feature, layer) {
   // Give each feature a popup describing the place and time of the earthquake
   return layer.bindPopup(`<h3> ${feature.properties.PlateName} </h3>`);
 }
 
-// function to receive a layer of markers and plot them on a map.
 
+
+
+//function to select color based on depth
 function getColor(depth){
   return depth > 90 ? '#f03535' :
          depth > 70 ? '#f27227' :
@@ -76,6 +80,8 @@ function getColor(depth){
          
 }
 
+
+//create styles for earthquakes
 function earthquakeStyle(feature) {
   return {
       radius: feature.properties.mag*4,
@@ -86,6 +92,9 @@ function earthquakeStyle(feature) {
       fillOpacity: 0.85
   };
 }
+
+
+//create styles for tectonic plates
 
 function plateStyle(feature) {
   return {
@@ -127,13 +136,14 @@ function createMap(earthquakes, plates, earthquakesLegend) {
     
   };
 
-  // Create overlay object to hold our overlay layer
+  // Create overlay object for earthquakes and tectonic plates
   var overlayMaps = {
-    "Tectonic Plates": plates,
     "Earthquakes": earthquakes,
+    "Tectonic Plates": plates,
+    
   };
 
-  // Create our map, giving it the streetmap and earthquakes layers to display on load
+  // Create our map, giving it the satellite and earthquakes layers to display on load
   var myMap = L.map("map", {
     center: [44.53155795563836, -102.61109623371827],
     zoom: 4,
@@ -152,8 +162,9 @@ function createMap(earthquakes, plates, earthquakesLegend) {
   myMap.on('overlayadd', function (eventLayer) {
     // Switch to the Earthquakes legend...
     if (eventLayer.name === 'Earthquakes') {
-        earthquakesLegend.addTo(this);
-    } else { // Or remove
+      earthquakesLegend.addTo(this);
+    }  
+    else { // Or remove
         this.removeControl(earthquakesLegend);
     }
 })
