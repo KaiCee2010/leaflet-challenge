@@ -14,23 +14,37 @@ Promise.all([d3.json(queryUrl), d3.json(queryUrl2)]).then(function(data){
     console.log("Earthquakes", data[0])
     console.log("Plates", data[1])
 
-    var geojsonMarkerOptions = {
-      radius: 8,
-      fillColor: "#ff7800",
-      color: "#000",
-      weight: 1,
-      opacity: 1,
-      fillOpacity: 0.8
-  }
+
+    // var magnitude = data[0].features.properties.mag
+    // var depth = geometry.coordinates[2]
+
+  //   var geojsonMarkerOptions = {
+  //     radius: magnitude*7500,
+  //     fillColor: getColor(depth),
+  //     color: "#000",
+  //     weight: 1,
+  //     opacity: .85,
+  //     fillOpacity: 0.8
+  // }
 
     var earthquakes = L.geoJSON(data[0].features, 
       {pointToLayer: function (feature, latlng) {
-      return L.circleMarker(latlng, geojsonMarkerOptions);
+      return L.circleMarker(latlng, style(feature));
       },
       onEachFeature : addPopup
     });
+
+    // var earthquakes = L.geoJSON(data[0].features, { 
+    //   style: style,
+    //   onEachFeature : addPopup
+    // });
   
-    createMap(earthquakes)
+    var plates = L.geoJSON(data[1].features, {
+      onEachFeature : addPopupPlate
+    });
+
+
+    createMap(earthquakes, plates)
   
 });
 
@@ -42,10 +56,35 @@ function addPopup(feature, layer) {
   return layer.bindPopup(`<h3> ${feature.properties.place} </h3> <hr> <p> ${Date(feature.properties.time)} </p>`);
 }
 
+function addPopupPlate(feature, layer) {
+  // Give each feature a popup describing the place and time of the earthquake
+  return layer.bindPopup(`<h3> ${feature.properties.PlateName} </h3>`);
+}
+
 // function to receive a layer of markers and plot them on a map.
 
+function getColor(depth){
+  return depth > 90 ? '#f03535' :
+         depth > 70 ? '#f27227' :
+         depth > 50 ? '#f6ac17' :
+         depth > 30 ? '#f0de33' :
+         depth > 10 ? '#a1f64c' :
+                      '#3dc809' ;
+         
+}
 
-function createMap(earthquakes) {
+function style(feature) {
+  return {
+      radius: feature.properties.mag*4,
+      fillColor: getColor(feature.geometry.coordinates[2]),
+      weight: 2,
+      opacity: 1,
+      color: 'black',
+      fillOpacity: 0.85
+  };
+}
+
+function createMap(earthquakes, plates) {
 
   // Define streetmap and darkmap layers
   var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -68,13 +107,14 @@ function createMap(earthquakes) {
 
   // Create overlay object to hold our overlay layer
   var overlayMaps = {
-    "Earthquakes": earthquakes
+    "Earthquakes": earthquakes,
+    "Plates": plates
   };
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load
   var myMap = L.map("map", {
-    center: [37.09, -95.71],
-    zoom: 5,
+    center: [44.53155795563836, -102.61109623371827],
+    zoom: 4,
     layers: [streetmap, earthquakes]
   });
 
