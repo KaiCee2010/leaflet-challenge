@@ -159,15 +159,6 @@ function createMap(earthquakes, plates, earthquakesLegend) {
 
   earthquakesLegend.addTo(myMap) 
 
-  myMap.on('overlayadd', function (eventLayer) {
-    // Switch to the Earthquakes legend...
-    if (eventLayer.name === 'Earthquakes') {
-      earthquakesLegend.addTo(this);
-    }  
-    else { // Or remove
-        this.removeControl(earthquakesLegend);
-    }
-})
- 
+  
 
 }

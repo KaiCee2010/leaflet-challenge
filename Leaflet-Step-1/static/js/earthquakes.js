@@ -49,29 +49,10 @@ var myMap = L.map("map", {
             console.log("depth before switch", depth)
             
 
-            // if (depth > 90){
-            //     var color = "#f03535"
-            // }
-            // else if (depth > 70){
-            //     var color = "#f27227"
-            // }
-            // else if (depth > 50){
-            //     var color = "#f6ac17"
-            // }
-            // else if (depth > 30){
-            //     var color = "#f0de33"
-            // }
-            // else if (depth > 10){
-            //     var color = "#a1f64c"
-            // }
-            // else {
-            //     var color = "#3dc809"
-            // }
-
             console.log("depth", depth)
             // console.log("color", color)
 
-
+            //create circles
             var myCircle = L.circle([geometry.coordinates[1], geometry.coordinates[0]],{
                 radius: magnitude*7500,
                 color: 'black',
@@ -87,6 +68,8 @@ var myMap = L.map("map", {
         }
     });
 
+
+    //Add a legend to the marker
     var legend = L.control({position: 'bottomright'});
     legend.onAdd = function (myMap) {
 
