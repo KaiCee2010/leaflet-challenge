@@ -26,13 +26,13 @@ var myMap = L.map("map", {
   var link = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
   
   
-  // Add a marker to the map for each crime
+  //Use D3 to get a response from the geojson layer
   d3.json(link).then(function(response) {
   
     var features = response.features
 
     console.log(features)
-  
+ 
     features.forEach(function(data){
         var geometry = data.geometry;
         var properties = data.properties;
@@ -60,8 +60,8 @@ var myMap = L.map("map", {
                 fillOpacity: .85,
                 weight: 1
             }).bindPopup(`<h3>${properties.title}</h3> <hr> 
-            <h5>Status: ${properties.status}<br>
-            <p> ${Date(properties.time)}<br>
+            <p> Magnitude: ${magnitude}<br>
+            Depth: ${depth}<br>
             Earthquake Info: <a href = ${properties.url}>Detailed Earthquake Info</a><br>
             </p> `)
             .addTo(myMap);

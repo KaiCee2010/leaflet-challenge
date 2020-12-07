@@ -54,10 +54,10 @@ Promise.all([d3.json(queryUrl), d3.json(queryUrl2)]).then(function(data){
 function addPopup(feature, layer) {
   // Give each feature a popup describing the place and time of the earthquake
   return layer.bindPopup(`<h3>${feature.properties.title}</h3> <hr> 
-  <h5>Status: ${feature.properties.status}<br>
-  ${Date(feature.properties.time)}<br>
-  Earthquake Info: <a href = ${feature.properties.url} target="_blank">Detailed Earthquake Info</a><br>
-  </h5>`);
+  <p> Magnitude: ${feature.properties.mag}<br>
+  Depth: ${feature.geometry.coordinates[2]}<br>
+  Earthquake Info: <a href = ${feature.properties.url}>Detailed Earthquake Info</a><br>
+  </p>`);
 }
 
 //function for popups for tectonic plates
