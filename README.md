@@ -1,6 +1,6 @@
 # Leaflet Challenge
 This homework assigned used data from to create a a leaflet map using data from [Earthquake GeoJson Feeds](http://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php).
-
+All files are included in the repository, except config.js which contains the API key.
 
 ## Leaflet Step 1
 ### Earthquake Data
